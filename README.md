@@ -4,7 +4,7 @@
 
 A Weather Forecast Application built using Python, Tkinter, Requests, and OpenWeatherMap API.
 
-The application allows users to enter a city name and view:
+The application allows users to enter a city name and also detect the location(ip address of internet provider but not user) and view:
 
 * Temperature
 * Humidity
