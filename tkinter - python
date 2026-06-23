@@ -1,0 +1,63 @@
+import tkinter
+import requests
+from tkinter import PhotoImage
+from tkinter import ttk
+from PIL import Image, ImageTk
+from tkinter import messagebox
+
+def user_citybuttonuse():
+    city=user_cityselection.get()
+    url=f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid=f1fca4ce3aeb140ffa9bca83f0ff1ec2&units=metric"
+    reply=requests.get(url)
+    reply_json=reply.json()
+    
+    if reply_json["cod"] != 200:
+       messagebox.showerror("Error","Enter Correct City Name")
+
+    celsius=reply_json["main"]["temp"]
+    humidity=reply_json["main"]["humidity"]
+    wind_speed=reply_json["wind"]["speed"]
+    weather=reply_json["weather"][0]["main"]
+    city_name = reply_json["name"]
+    weather_label.config(
+        text=
+        f"Temparature :{celsius}\n\n"
+        f"Humidity : {humidity}\n\n"
+        f"Wind Speed :{wind_speed}\n\n"
+        f"Weather Condition : {weather}\n\n"
+        f"City Name :{city_name}\n"
+    )
+app=tkinter.Tk()
+app.geometry("400x500")
+app.title("Wheather Application")
+image_path = r"C:\Users\saian\OneDrive\Pictures\weather_appbg.jpg"
+image = Image.open(image_path)
+image= image.resize((400,500))
+bg_image = ImageTk.PhotoImage(image)
+set_image = tkinter.Label(
+    app,
+    image=bg_image
+)
+set_image.place(
+    x=0,
+    y=0,
+    relwidth=1,
+    relheight=1
+)
+name_label=tkinter.Label(app,text=" Wheather Forcast Application ")
+name_label.pack(pady=10)
+user_cityselection=tkinter.Entry(app)
+user_cityselection.pack(pady=10)
+user_citybutton=tkinter.Button(app,text=" Submit ",command=user_citybuttonuse)
+user_citybutton.pack(pady=10)
+
+weather_label =tkinter.Label(
+    app,
+    text="",
+    width=25,
+    height=12,
+    relief="solid",
+    font=('Georgia',10)
+)
+weather_label.pack(pady=10)
+app.mainloop()
