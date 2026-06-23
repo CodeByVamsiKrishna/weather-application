@@ -7,7 +7,7 @@ from tkinter import messagebox
 
 def user_citybuttonuse():
     city=user_cityselection.get()
-    url=f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid=f1fca4ce3aeb140ffa9bca83f0ff1ec2&units=metric"
+    url=f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid=&units=metric"
     reply=requests.get(url)
     reply_json=reply.json()
     
