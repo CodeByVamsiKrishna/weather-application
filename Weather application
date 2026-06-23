@@ -1,122 +1,145 @@
 import tkinter
 import requests
 from tkinter import messagebox
-from PIL import Image, ImageTk
 
-API_KEY = "YOUR_API_KEY"
+API_KEY = "Use Your API Key "
 
-def user_citybuttonuse():
 
-    city = user_cityselection.get().strip()
+def get_weather(city):
+
+    url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=metric"
+
+    response = requests.get(url)
+
+    if response.status_code != 200:
+
+        messagebox.showerror(
+            "Error",
+            "City not found"
+        )
+
+        return
+
+    data = response.json()
+
+    temp = data["main"]["temp"]
+
+    humidity = data["main"]["humidity"]
+
+    wind_speed = round(
+        data["wind"]["speed"] * 3.6,
+        1
+    )
+
+    condition = data["weather"][0]["main"]
+
+    city_name = data["name"]
+
+    weather_label.config(
+        text=
+        f"City : {city_name}\n\n"
+        f"Temperature : {temp} °C\n\n"
+        f"Humidity : {humidity}%\n\n"
+        f"Wind Speed : {wind_speed} km/h\n\n"
+        f"Condition : {condition}"
+    )
+
+
+def detect_weather():
+
+    location = requests.get(
+        "http://ip-api.com/json/"
+    )
+
+    location_data = location.json()
+
+    if location_data.get("status") != "success":
+
+        messagebox.showerror(
+            "Error",
+            "Unable to detect location"
+        )
+
+        return
+
+    city = location_data["city"]
+
+    get_weather(city)
+
+
+def manual_weather():
+
+    city = city_entry.get().strip()
 
     if city == "":
+
         messagebox.showerror(
             "Error",
             "Please enter a city name"
         )
+
         return
 
-    url = (
-        f"https://api.openweathermap.org/data/2.5/weather"
-        f"?q={city}"
-        f"&appid={API_KEY}"
-        f"&units=metric"
-    )
+    get_weather(city)
 
-    reply = requests.get(url)
-
-    reply_json = reply.json()
-
-    if str(reply_json["cod"]) != "200":
-        messagebox.showerror(
-            "Error",
-            "Enter Correct City Name"
-        )
-        return
-
-    celsius = reply_json["main"]["temp"]
-
-    humidity = reply_json["main"]["humidity"]
-
-    wind_speed = round(
-        reply_json["wind"]["speed"] * 3.6,
-        1
-    )
-
-    weather = reply_json["weather"][0]["main"]
-
-    city_name = reply_json["name"]
-
-    weather_label.config(
-        text=
-        f"Temperature : {celsius} °C\n\n"
-        f"Humidity : {humidity}%\n\n"
-        f"Wind Speed : {wind_speed} km/h\n\n"
-        f"Weather Condition : {weather}\n\n"
-        f"City Name : {city_name}"
-    )
 
 app = tkinter.Tk()
 
-app.geometry("400x500")
-
 app.title("Weather Forecast Application")
 
-image_path = "weather_appbg.jpg"
+app.geometry("500x550")
 
-image = Image.open(image_path)
 
-image = image.resize((400, 500))
-
-bg_image = ImageTk.PhotoImage(image)
-
-set_image = tkinter.Label(
-    app,
-    image=bg_image
-)
-
-set_image.place(
-    x=0,
-    y=0,
-    relwidth=1,
-    relheight=1
-)
-
-name_label = tkinter.Label(
+title_label = tkinter.Label(
     app,
     text="Weather Forecast Application",
-    font=("Georgia", 14, "bold")
+    font=("Georgia", 18, "bold")
 )
 
-name_label.pack(pady=10)
+title_label.pack(pady=15)
 
-user_cityselection = tkinter.Entry(
+
+detect_button = tkinter.Button(
     app,
-    width=30,
+    text="Detect My Location",
+    font=("Arial", 11),
+    command=detect_weather
+)
+
+detect_button.pack(pady=10)
+
+
+city_entry = tkinter.Entry(
+    app,
+    width=35,
     font=("Arial", 12)
 )
 
-user_cityselection.pack(pady=10)
+city_entry.pack(pady=10)
 
-user_citybutton = tkinter.Button(
+
+weather_button = tkinter.Button(
     app,
     text="Get Weather",
-    command=user_citybuttonuse
+    font=("Arial", 11),
+    command=manual_weather
 )
 
-user_citybutton.pack(pady=10)
+weather_button.pack(pady=10)
+
 
 weather_label = tkinter.Label(
     app,
     text="",
-    width=28,
+    width=35,
     height=12,
     relief="solid",
     borderwidth=2,
-    font=("Georgia", 10),
-    justify="left"
+    justify="left",
+    font=("Arial", 11)
 )
 
-weather_label.pack(pady=10)
+weather_label.pack(pady=20)
+
 
 app.mainloop()
